@@ -7,6 +7,9 @@ const port = '4000'
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.get('/api/hello', (req, res, next) => {
+  res.send("Hello");
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
