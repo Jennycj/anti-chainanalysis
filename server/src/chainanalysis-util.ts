@@ -47,20 +47,46 @@ export class ChainAnalysisUtil {
         return array;
     }
 
-    binarySearch(nums: UTXO[], target: number): UTXO | number{
+    binarySearch(utxos: UTXO[], target: number): UTXO | number{
         let left: number = 0;
-        let right: number = nums.length - 1;
+        let right: number = utxos.length - 1;
 
         while (left <= right) {
             const mid: number = Math.floor((left + right) / 2);
 
-            if (nums[mid].amountInSats === target) return nums[mid];
-            if (target < nums[mid].amountInSats) right = mid - 1;
+            if (utxos[mid].amountInSats === target) return utxos[mid];
+            if (target < utxos[mid].amountInSats) right = mid - 1;
             else left = mid + 1;
         }
         return 0;
     }
 
+    async getUtxoDetails(outputs: { txid: string; vout: number; }[]): Promise<any> {
+        let response = []
+        let result;
+        for(let i=0; i<outputs.length; i++) {
+            let txidd = outputs[i].txid
+            let voutt = outputs[i].vout
+            let data = `{"jsonrpc": "1.0", "id": "curltest", "method": "gettxout", "params": ["${txidd}", ${voutt}]}`;
+
+            var config = {
+                method: 'post',
+                url: 'http://127.0.0.1:18443',
+                headers: {
+                    'content-type': 'text/plain;',
+                    'Authorization': 'Basic cG9sYXJ1c2VyOnBvbGFycGFzcw=='
+                },
+                data : data
+            };
+
+            result = await axios(config)
+            // response.push(result.data.result)
+            response.push({txid: txidd , vout: voutt, amountInSats: result.data.result.value})
+        }
+
+        console.log(response)
+        return response;
+    }
 }
 
 

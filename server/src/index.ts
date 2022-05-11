@@ -1,6 +1,6 @@
 import express from 'express';
 import httpErrors from 'http-errors';
-import chainAnalysisService, {UTXO} from "./chainanalysis-service";
+import chainAnalysisService, {UTXO, UtxoRequest} from "./chainanalysis-service";
 import chainAnalysisUtil from "./chainanalysis-util";
 
 
@@ -11,28 +11,22 @@ const port = '4000'
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.get('/api/hello', (req, res, next) => {
+app.post('/api/uxto', (req, res, next) => {
 
   const { amountInSats, utxos } = req.body
-  console.log("=============1 ", amountInSats)
-  console.log("=============2 ", utxos)
+  // console.log("=============1 ", amountInSats)
+  // console.log("=============2 ", utxos)
 
-  let transactionDetailsFromBlockStream = chainAnalysisService.getTransactionDetailsFromBlockStream("13417e07a48220a3a645020ea502b257ca74041f5e5ff6f53989ff7dac00007c");
-  transactionDetailsFromBlockStream.then((response) => {
-    // //sort the utxos
-    // let newUTXOs: UTXO[] = [
-    //   {transactionId: "43417e07a48220a3a645020ea502b257ca74041f5e5ff6f53989ff7dac00007c", amountInSats: 11},
-    //   {transactionId: "13417e07a48220a3a645020ea502b257ca74041f5e5ff6f53989ff7dac00007c", amountInSats: 2},
-    //   {transactionId: "33417e07a48220a3a645020ea502b257ca74041f5e5ff6f53989ff7dac00007c", amountInSats: 5},
-    //   {transactionId: "23417e07a48220a3a645020ea502b257ca74041f5e5ff6f53989ff7dac00007c", amountInSats: 3}
-    // ];
+  const outputs : UtxoRequest[] =[
+    {txid: "ac3da281c872a026c1a8587a92dbe7c2012a5d5317d7fe6ae57933a260f0d09f" ,vout: 0},
+    {txid: "bd8c0a7dff4499842c0af50ba2beb1881e48a6261b6fabdec132a8f44a367ea7", vout: 0},
+    {txid: "bd388f32e3feb86ff59c87fae4a27d30ec3105bcb11a62ff1a38b6820c3ba0a8", vout: 0}
+  ]
 
-    let sortedUTXOs = chainAnalysisUtil.quickSort(utxos, 0, utxos.length - 1);
-    // for (let i = 0; i < utxos.length; i++) {
-    //   console.log(utxos[i]);
-    // }
-
-    let bestUTXOCombination = chainAnalysisService.getBestUTXOCombination(sortedUTXOs, amountInSats);
+  let utxoDetails = chainAnalysisUtil.getUtxoDetails(outputs);
+  utxoDetails.then((utxoDetailsResponse) => {
+    let sortedUTXOs = chainAnalysisUtil.quickSort(utxoDetailsResponse, 0, utxos.length - 1);
+    let bestUTXOCombination = chainAnalysisService.getBestUTXOCombination(sortedUTXOs, parseInt(amountInSats));
     res.json({data: bestUTXOCombination});
     // res.json({data: response.data});
   }).catch((err) => {
