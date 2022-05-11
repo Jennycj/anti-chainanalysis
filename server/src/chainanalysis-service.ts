@@ -3,8 +3,14 @@ import chainAnalysisUtil from "./chainanalysis-util";
 
 
 export interface UTXO {
-    transactionId: string;
+    txid: string;
     amountInSats: number;
+    vout: number;
+}
+
+export interface UtxoRequest {
+    txid: string;
+    vout: number;
 }
 
 export class ChainAnalysisService {
@@ -19,16 +25,15 @@ export class ChainAnalysisService {
     }
 
     getBestUTXOCombination(utxos: UTXO[], amount: number): any {
+        console.log("=============3 ", utxos)
         let paymentUTXOs: UTXO[] = [];
         let singlePaymentUTXOs: UTXO[] = [];
         let accumulateAmount = 0;
 
         let foundUTXO = chainAnalysisUtil.binarySearch(utxos, amount);
         if (foundUTXO !== 0) {
-            console.log("??????????????2")
             return foundUTXO;
         }
-        console.log("??????????????3")
         for (let i = 0; i < utxos.length; i++) {
             let amountDiff = utxos[i].amountInSats - amount
             let biggerChange = (amount * 2) + 1
@@ -50,7 +55,6 @@ export class ChainAnalysisService {
                 }
             }
         }
-        console.log("==== in here ====")
         return paymentUTXOs;
     }
 
