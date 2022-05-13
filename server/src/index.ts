@@ -11,40 +11,43 @@ const port = '4000'
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.post('/api/uxto', (req, res, next) => {
+app.post('/api/utxo/analyze', (req, res, next) => {
 
-  const { amountInSats, utxos } = req.body
-  // console.log("=============1 ", amountInSats)
-  // console.log("=============2 ", utxos)
+  const { destinationAddress, amountInSats, utxos } = req.body
 
-  const outputs : UtxoRequest[] =[
-    {txid: "ac3da281c872a026c1a8587a92dbe7c2012a5d5317d7fe6ae57933a260f0d09f" ,vout: 0},
-    {txid: "bd8c0a7dff4499842c0af50ba2beb1881e48a6261b6fabdec132a8f44a367ea7", vout: 0},
-    {txid: "bd388f32e3feb86ff59c87fae4a27d30ec3105bcb11a62ff1a38b6820c3ba0a8", vout: 0}
-  ]
+  let responseStatus = "01";
+  let responseMessage = "Failed"
 
-  let utxoDetails = chainAnalysisUtil.getUtxoDetails(outputs);
-  utxoDetails.then((utxoDetailsResponse) => {
-    let sortedUTXOs = chainAnalysisUtil.quickSort(utxoDetailsResponse, 0, utxos.length - 1);
-    let bestUTXOCombination = chainAnalysisService.getBestUTXOCombination(sortedUTXOs, parseInt(amountInSats));
-    res.json({data: bestUTXOCombination});
-    // res.json({data: response.data});
+  try{
+
+    let addressTransactionsResponse = chainAnalysisUtil.getAddressTransactions(destinationAddress);
+    addressTransactionsResponse.then((addressTransactions) => {
+      if(addressTransactions.length === 0){
+        responseStatus = "00";
+        responseMessage = "Successful"
+      }else {
+        responseStatus = "03";
+        responseMessage = "Destination Address [ "+destinationAddress+" ] may have been used in previous trnasaction"
+      }
+      let utxoDetails = chainAnalysisUtil.getUtxoDetails(utxos);
+      utxoDetails.then((utxoDetailsResponse) => {
+        if(chainAnalysisUtil.isAmountValid(utxoDetailsResponse, parseFloat(amountInSats))){
+          let sortedUTXOs = chainAnalysisUtil.quickSort(utxoDetailsResponse, 0, utxos.length - 1);
+          let bestUTXOCombination = chainAnalysisService.getBestUTXOCombination(sortedUTXOs, parseFloat(amountInSats));
+          res.json({status: responseStatus, message: responseMessage, data: bestUTXOCombination});
+        } else {
+          res.json({status: "01", message: "Amount cannot be greater than or equals sum of UTXOs value", data: null});
+        }
+      }).catch((err) => {
+        res.json({status: responseStatus, message: responseMessage, data: err});
+      })
   }).catch((err) => {
-    res.json({data: err});
-  })
+      res.json({status: responseStatus, message: responseMessage, data: err});
+    })
+  } catch (error: any){
+    res.json({status: responseStatus, message: error.message, data: null});
+  }
 });
-
-// // catch 404 and forward to error handler
-// app.use(function(req, res, next) {
-//   next(httpErrors.createError(404));
-// });
-//
-// // error handler
-// app.use(function (err, req, res, next) {
-//   console.error(err.message);
-//   if (!err.statusCode) err.statusCode = 500;
-//   res.status(err.statusCode).send(err.message);
-// });
 
 app.listen(port,  () => {
   console.log(`Listening on port ${port}`);
