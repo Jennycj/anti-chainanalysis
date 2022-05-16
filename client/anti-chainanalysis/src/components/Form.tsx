@@ -1,45 +1,56 @@
-
-
-
 import React, { ChangeEvent, useState } from "react";
 import './Form.css'
 
 function Form() {
     interface UtxoProps {
-        transactionID: string;
-        vout: number;
+        txid?: string;
+        vout?: string;
+        index?: string;
       }
 
     interface InfoProps {
         address: string;
-        amount: number;
+        amount: string;
     }
-    const [inputList, setInputList] = useState<Array<UtxoProps>>([{ transactionID: "", vout: 0 }]);
-    const [amountList, setAmountList] = useState<Array<InfoProps>>([{ amount: 0, address: "" }]);
+    const [inputList, setInputList] = useState<Array<UtxoProps>>([{ txid: "", vout: "" }]);
+    const [amountList, setAmountList] = useState<InfoProps>({ amount: "", address: "" });
 
-    // handle input change
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement>, index: number) => {
 
-        console.log(e, index)
-        const { name, value } = e.target;
-        const list = [...inputList];
-        // const obj = list[index]
-        // console.log(name)
-        // obj[name as keyof UtxoProps] = value;
-        // list[index][name] = value;
-        setInputList(list);
-    };
-    const handleAmountChange = (e: ChangeEvent<HTMLInputElement>, index: number) => {
-        const { name, value } = e.target;
-        const list = [...amountList];
-        // console.log(list);
-        
-        // list[index][name] = value;
-        setAmountList(list);
-    };
+    const onChangeTxidHandler = (e:ChangeEvent<HTMLInputElement>, i: number, param: string) => {
+        setInputList((prev) => {
+           let newInputList:any = [...prev]
+           if(param === "txid") {
+               let newInput = {...newInputList[i], txid: e.target.value} 
+               newInputList[i] = newInput
+               return newInputList;
+           } 
+           if(param === "vout") {
+               let newInput = {...newInputList[i], vout: e.target.value} 
+               newInputList[i] = newInput
+               return newInputList;
+           } 
+           
+        }
+        )
+    }
+
+    const onChangeAmountHandler = (e:ChangeEvent<HTMLInputElement>, param: string) => {
+        setAmountList((prev:any) => {
+           if(param === "amount") {
+              let newInput = {...prev, amount: e.target.value} 
+               return newInput;
+           } 
+           if(param === "address") {
+                let newInput = {...prev, address: e.target.value} 
+                return newInput;
+            } 
+           
+        }
+        )
+    }
 
     // handle click event of the Remove button
-    const handleRemoveClick = (index: number) => {
+    const handleRemoveClick = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
         const list = [...inputList];
         list.splice(index, 1);
         setInputList(list);
@@ -47,46 +58,63 @@ function Form() {
 
     // handle click event of the Add button
     const handleAddClick = () => {
-        // setInputList([...inputList, { transactionID: "", vout: "" }]);
+        setInputList( () =>  [...inputList, { txid: "", vout: "" }]);
+        
     };
+
+    const handleSubmitClick = () => {
+        const data = [inputList, amountList]
+        console.log(data);
+        
+        return data;
+    }
+
+
 
     return (
         <div className="form">
             <h3 className='form-header'>Best UTXO combinator</h3>
-            <div className="wrapper"> 
+            <div className="wrapper">
+            <div className="box">
+                <input
+                    name="amount"
+                    placeholder="Amount"
+                    onChange={(e) => onChangeAmountHandler(e, "amount")}
+                />
+                <input
+                    name="address"
+                    placeholder="Destination address"
+                    onChange={(e) => onChangeAmountHandler(e, "address")}
+                />
+            </div> 
             {inputList.map((x:UtxoProps , i:number) => {
-                return (
-                        <div className="box">
-                            <input
-                                name="transactionID"
-                                placeholder="Enter the UTXO's transaction ID here"
-                                value={x.transactionID}
-                                // value={""}
-                                defaultValue={""}
-                                onChange={e => handleInputChange(e, i)}
-                            />
-                            <input
-                                className="ml10"
-                                name="Index"
-                                placeholder="Enter the UTXO's index/vout here"
-                                value={x.vout}
-                                onChange={e => handleInputChange(e, i)}
-                            />
-                            <div className="btn-box">
-                                {inputList.length !== 1 && <button
-                                    className="mr10"
-                                    onClick={() => handleRemoveClick(i)}>Remove</button>}
-                                {/* {inputList.length - 1 === i && <button onClick={handleAddClick}>Add</button>} */}
+                return (  
+                            <div className="box" key={i}>
+                                <input
+                                    name="transactionID"
+                                    placeholder="Enter transaction ID here"
+                                    onChange={(e) => onChangeTxidHandler(e, i, "txid")}
+                                />
+                                <input
+                                    className="ml10"
+                                    name="Index"
+                                    placeholder="Enter vout here"
+                                    onChange={(e) => onChangeTxidHandler(e, i, "vout")}
+                                />
+                                <div className="btn-box">
+                                    {inputList.length !== 1 && <button
+                                        className="mr10"
+                                        onClick={(e) => handleRemoveClick(e,i)}>Remove</button>}
+                                    {/* {inputList.length - 1 === i && <button onClick={handleAddClick}>Add</button>} */}
+                                </div>
                             </div>
-                        </div>
-
-                );
+                        );
             })}
 
             </div>
             <div className='btn-wrapper'>
                 <button onClick={handleAddClick}>Add</button>
-                <button>Submit</button>
+                <button onClick={handleSubmitClick}>Submit</button>
             </div>
             
             {/* <div style={{ marginTop: 20 }}>{JSON.stringify(inputList)}</div> */}
