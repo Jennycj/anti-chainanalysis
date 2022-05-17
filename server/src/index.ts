@@ -1,7 +1,8 @@
 import express from 'express';
-import httpErrors from 'http-errors';
 import chainAnalysisService, {UTXO, UtxoRequest} from "./chainanalysis-service";
 import chainAnalysisUtil from "./chainanalysis-util";
+import cors from "cors";
+
 
 
 // Configure server
@@ -10,6 +11,7 @@ const port = '4000'
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cors({ origin: '*' }));
 
 app.post('/api/utxo/analyze', (req, res, next) => {
 
