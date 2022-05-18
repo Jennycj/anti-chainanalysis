@@ -90,7 +90,7 @@ export class ChainAnalysisUtil {
         return response;
     }
 
-    async getAddressTransactions(address: string): Promise<any> {
+    async getTransactions(address: string): Promise<any> {
         return await axios.get('https://mempool.space/signet/api/address/' + address + '/txs')
             .then(addressresponse => {
                 return addressresponse.data
