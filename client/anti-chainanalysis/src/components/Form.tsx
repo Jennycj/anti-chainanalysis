@@ -1,5 +1,6 @@
-import React, { ChangeEvent, useState } from "react";
+import React, {ChangeEvent, useState} from "react";
 import './Form.css'
+import axios from "axios";
 
 interface UtxoProps {
     txid: string;
@@ -17,36 +18,36 @@ function Form() {
     const [amountList, setAmountList] = useState<InfoProps>({ amount: "", address: "" });
 
 
-    const onChangeTxidHandler = (e:ChangeEvent<HTMLInputElement>, i: number, param: string) => {
+    const onChangeTxidHandler = (e: ChangeEvent<HTMLInputElement>, i: number, param: string) => {
         setInputList((prev) => {
-           let newInputList:any = [...prev]
-           if(param === "txid") {
-               let newInput = {...newInputList[i], txid: e.target.value} 
-               newInputList[i] = newInput
-               return newInputList;
-           } 
-           if(param === "vout") {
-               let newInput = {...newInputList[i], vout: e.target.value} 
-               newInputList[i] = newInput
-               return newInputList;
-           } 
-           
-        }
+                let newInputList: any = [...prev]
+                if (param === "txid") {
+                    let newInput = {...newInputList[i], txid: e.target.value}
+                    newInputList[i] = newInput
+                    return newInputList;
+                }
+                if (param === "vout") {
+                    let newInput = {...newInputList[i], vout: e.target.value}
+                    newInputList[i] = newInput
+                    return newInputList;
+                }
+
+            }
         )
     }
 
-    const onChangeAmountHandler = (e:ChangeEvent<HTMLInputElement>, param: string) => {
-        setAmountList((prev:any) => {
-           if(param === "amount") {
-              let newInput = {...prev, amount: e.target.value} 
-               return newInput;
-           } 
-           if(param === "address") {
-                let newInput = {...prev, address: e.target.value} 
-                return newInput;
-            } 
-           
-        }
+    const onChangeAmountHandler = (e: ChangeEvent<HTMLInputElement>, param: string) => {
+        setAmountList((prev: any) => {
+                if (param === "amount") {
+                    let newInput = {...prev, amount: e.target.value}
+                    return newInput;
+                }
+                if (param === "address") {
+                    let newInput = {...prev, address: e.target.value}
+                    return newInput;
+                }
+
+            }
         )
     }
 
@@ -62,6 +63,20 @@ function Form() {
         
     };
 
+    const callAnalyzeAPI = (destinationAddress: string, amountInSats: string, outputs: { txid: string; vout: number; }[]) => {
+        console.log("=====got here =======")
+        axios.post('http://localhost:4000/api/utxo/analyze', {
+            destinationAddress: destinationAddress,
+            amountInSats: amountInSats,
+            utxos: outputs
+        }).then(response => {
+            console.log("[+]", response.data);
+        }).catch((err) => {
+            console.log(err)
+        });
+
+    }
+
     const handleSubmitClick = () => {
         const filtered = inputList.filter((item)=> item.txid !== "" && item.vout !== "")
         if(!filtered.length){
@@ -74,7 +89,6 @@ function Form() {
         const data = [filtered, amountList] 
         return data;
     }
-
 
 
     return (
@@ -124,7 +138,7 @@ function Form() {
                 <button onClick={handleAddClick}>Add</button>
                 <button onClick={handleSubmitClick}>Submit</button>
             </div>
-            
+
             {/* <div style={{ marginTop: 20 }}>{JSON.stringify(inputList)}</div> */}
         </div>
     );

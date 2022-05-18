@@ -25,7 +25,6 @@ export class ChainAnalysisService {
     }
 
     getBestUTXOCombination(utxos: UTXO[], amount: number): any {
-        console.log("=============3 ", utxos)
         let paymentUTXOs: UTXO[] = [];
         let singlePaymentUTXOs: UTXO[] = [];
         let accumulateAmount = 0;

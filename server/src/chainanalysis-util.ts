@@ -47,7 +47,7 @@ export class ChainAnalysisUtil {
         return array;
     }
 
-    binarySearch(utxos: UTXO[], target: number): UTXO | number{
+    binarySearch(utxos: UTXO[], target: number): UTXO | number {
         let left: number = 0;
         let right: number = utxos.length - 1;
 
@@ -64,7 +64,7 @@ export class ChainAnalysisUtil {
     async getUtxoDetails(outputs: { txid: string; vout: number; }[]): Promise<any> {
         let response = []
         let result;
-        for(let i=0; i<outputs.length; i++) {
+        for (let i = 0; i < outputs.length; i++) {
             let txidd = outputs[i].txid
             let voutt = outputs[i].vout
             let data = `{"jsonrpc": "1.0", "id": "curltest", "method": "gettxout", "params": ["${txidd}", ${voutt}]}`;
@@ -74,18 +74,37 @@ export class ChainAnalysisUtil {
                 url: 'http://127.0.0.1:18443',
                 headers: {
                     'content-type': 'text/plain;',
-                    'Authorization': 'Basic cG9sYXJ1c2VyOnBvbGFycGFzcw=='
+                    'Authorization': 'Basic dGVzdDp0ZXN0'
                 },
-                data : data
+                data: data
             };
 
             result = await axios(config)
             // response.push(result.data.result)
-            response.push({txid: txidd , vout: voutt, amountInSats: result.data.result.value})
+            // console.log("#===========# ", result.data.result.scriptPubKey.addresses)
+            console.log("#===========# ", result.data.result)
+            response.push({txid: txidd, vout: voutt, amountInSats: result.data.result.value})
         }
 
         console.log(response)
         return response;
+    }
+
+    async getTransactions(address: string): Promise<any> {
+        return await axios.get('https://mempool.space/signet/api/address/' + address + '/txs')
+            .then(addressresponse => {
+                return addressresponse.data
+            }).catch((err) => {
+                console.log("-----------", err)
+            });
+    }
+
+    isAmountValid(utxos: any, amountInSats: number): boolean {
+        let sum: number = utxos.map((a: { amountInSats: any; }) => a.amountInSats).reduce(function (a: any, b: any) {
+            let number = a + b;
+            return number;
+        });
+        return sum>amountInSats;
     }
 }
 
