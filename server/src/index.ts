@@ -22,7 +22,7 @@ app.post('/api/utxo/analyze', (req, res, next) => {
 
   try{
 
-    let addressTransactionsResponse = chainAnalysisUtil.getAddressTransactions(destinationAddress);
+    let addressTransactionsResponse = chainAnalysisUtil.getTransactions(destinationAddress);
     addressTransactionsResponse.then((addressTransactions) => {
       if(addressTransactions.length === 0){
         responseStatus = "00";
