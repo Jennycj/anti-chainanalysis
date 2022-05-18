@@ -63,7 +63,7 @@ function Form() {
         
     };
 
-    const callAnalyzeAPI = (destinationAddress: string, amountInSats: string, outputs: { txid: string; vout: number; }[]) => {
+    const callAnalyzeAPI = (destinationAddress: string, amountInSats: string, outputs: { txid: string; vout: string; }[]) => {
         console.log("=====got here =======")
         axios.post('http://localhost:4000/api/utxo/analyze', {
             destinationAddress: destinationAddress,
@@ -74,7 +74,6 @@ function Form() {
         }).catch((err) => {
             console.log(err)
         });
-
     }
 
     const handleSubmitClick = () => {
@@ -86,8 +85,10 @@ function Form() {
             window.alert("Please enter amount you would like to send before submit")
             return
         }
-        const data = [filtered, amountList] 
-        return data;
+        // const data = [filtered, amountList]
+        const result = callAnalyzeAPI(amountList.address, amountList.amount, filtered);
+        console.log(">>>>> ", result)
+        return result;
     }
 
 

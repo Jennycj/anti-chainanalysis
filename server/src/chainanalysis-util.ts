@@ -104,7 +104,7 @@ export class ChainAnalysisUtil {
             let number = a + b;
             return number;
         });
-        return sum>amountInSats;
+        return sum>=amountInSats;
     }
 }
 
