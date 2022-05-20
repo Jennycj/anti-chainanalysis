@@ -1,63 +1,46 @@
-# Anti-Chain Analyser
+# Getting Started with Create React App
 
-##Overview
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-Traditional payment systems have the AML/KYC combined with transaction history for financial organizations to make some decisions about a particular customer. A use case is a customer requesting a loan. Loan companies perform some sort of analysis to know if the customer is eligible or not. This process is easy in the centralized system because the loan company only needs to query a source to see how often the customer carries out transactions which in turn aids their decision. In a decentralized system, bitcoin, for example, transactions are publicly available for anyone to view but these transaction activities are not tied to a user or personal identification information making it difficult to trace fraudulent transactions. In bitcoin, chain analysis can be used to trace transactions by combining a series of heuristics to follow a user’s activity over multiple transactions.
-The aim of this document is to describe an anti-chain analysis service (API) that returns the best UTXO combination to use in a future transaction based on the input given, in a bid to help the user preserve their privacy by defeating chain analysis.
+## Available Scripts
 
+In the project directory, you can run:
 
-[//]: # (![demo]&#40;./image/landingpage.jpeg&#41;)
+### `npm start`
 
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-## Features
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
 
-- [x] Request (a set of) UTXOs from users.
-- [x] Request for amount from users trying to analyze UTXOs to spend for a transaction.
-- [x] Apply the heuristics algorithm to the provided UTXOs.
-- [x] Return UTXOs combination that best optimizes user privacy.
+### `npm test`
 
-## Goal
-Use the different heuristics approach to evaluate sets of UTXO with respect to the provided amount. Some of the heuristics that will be explored include:
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-**The unnecessary Input Heuristic:** is used to counter change detection Although this will require the user to pass more UTXO that sums to an amount greater than the intended amount.
+### `npm run build`
 
-**Shadow heuristic:** when an address is reused, it’s easy to tell which address is the change address. This service will use this heuristic to prevent sending transaction funds back to any of the previous output script
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-##Not Goal
-We’re aware some of the heuristics used might incur more miner fees. The service is tailored towards privacy and not fee estimation/reduction.
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-##Architecture
-Web Client: consumes APIs from the backend and sends analysis results to the user. The frontend will be built with React js which can be rendered on a browser, be it on a mobile phone or a computer.
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-Backend: The frontend interacts with the node express server (backend) via REST APIs. The backend is written with Typescript.
+### `npm run eject`
 
-Bitcoin Node: The UTXO analyzer interacts directly with the bitcoin node instead of trusting third-party APIs like https://blockstream.info for UTXO-related data.
+**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-## Installation
+If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-The anti-chainanalyser connects to a [Bitcoin node](https://github.com/bitcoin/bitcoin/blob/master/README.md), so a running Bitcoin node is required.
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-You need to have [Node](https://nodejs.org/en/download/) installed. Simply download the binary and run it!
-Ensure the the below command runs
+You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-1. `$ node -v`
-2. `$ npm -v`
-3. `$ git clone https://github.com/Jennycj/anti-chainanalysis.git `
+## Learn More
 
-## Start Client
-```
-$ cd /anti-chainanalysis/client/anti-chainanalysis
-$ npm install
-$ npm run start
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-```
-
-## Start Server
-```
-$ cd /anti-chainanalysis/server
-$ npm install
-$ npm run dev
-```
-
-**Note** : The anti-chainanalyser runs on port 4000 by default.
-
+To learn React, check out the [React documentation](https://reactjs.org/).
