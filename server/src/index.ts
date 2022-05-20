@@ -15,10 +15,11 @@ app.use(cors({ origin: '*' }));
 
 app.post('/api/utxo/analyze', (req, res, next) => {
 
-  const { destinationAddress, amountInSats, utxos } = req.body
+  const { destinationAddress, amount, utxos } = req.body
 
   let responseStatus = "01";
   let responseMessage = "Failed"
+  let amountInSats = parseFloat(amount) //+ parseFloat(chainAnalysisService.getFeeRateInSataPerByte());
 
   try{
 
@@ -33,9 +34,9 @@ app.post('/api/utxo/analyze', (req, res, next) => {
       }
       let utxoDetails = chainAnalysisUtil.getUtxoDetails(utxos);
       utxoDetails.then((utxoDetailsResponse) => {
-        if(chainAnalysisUtil.isAmountValid(utxoDetailsResponse, parseFloat(amountInSats))){
+        if(chainAnalysisUtil.isAmountValid(utxoDetailsResponse, amountInSats)){
           let sortedUTXOs = chainAnalysisUtil.quickSort(utxoDetailsResponse, 0, utxos.length - 1);
-          let bestUTXOCombination = chainAnalysisService.getBestUTXOCombination(sortedUTXOs, parseFloat(amountInSats));
+          let bestUTXOCombination = chainAnalysisService.getBestUTXOCombination(sortedUTXOs, amountInSats);
           res.json({status: responseStatus, message: responseMessage, data: bestUTXOCombination});
         } else {
           res.json({status: "01", message: "Amount cannot be greater than or equals sum of UTXOs value", data: null});

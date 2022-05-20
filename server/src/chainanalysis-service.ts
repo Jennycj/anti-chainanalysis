@@ -57,6 +57,10 @@ export class ChainAnalysisService {
         return paymentUTXOs;
     }
 
+    getFeeRateInSataPerByte(): string {
+        return "10";
+    }
+
 }
 
 let chainAnalysisService = new ChainAnalysisService();
