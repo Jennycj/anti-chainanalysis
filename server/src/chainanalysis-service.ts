@@ -31,7 +31,8 @@ export class ChainAnalysisService {
 
         let foundUTXO = chainAnalysisUtil.binarySearch(utxos, amount);
         if (foundUTXO !== 0) {
-            return foundUTXO;
+            paymentUTXOs.push(<UTXO>foundUTXO)
+            return paymentUTXOs;
         }
         for (let i = 0; i < utxos.length; i++) {
             let amountDiff = utxos[i].amountInSats - amount
