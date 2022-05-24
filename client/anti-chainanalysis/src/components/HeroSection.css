@@ -9,11 +9,18 @@
     overflow-y: hidden;
 }
 
+.text {
+    margin-right: 50px;
+    margin-bottom: 190px;
+}
+
 h1 {
-    font-size: 4rem;
-    padding-left: 20px;
+    font-size: 3.2rem;
+    padding-left: 10px;
 }
 
 p {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
+    padding-left: 10px;
+
 }

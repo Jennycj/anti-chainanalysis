@@ -14,8 +14,9 @@ interface InfoProps {
 }
 function Form() {
  
-    const [inputList, setInputList] = useState<Array<UtxoProps>>([{ txid: "", vout: "" }]);
-    const [amountList, setAmountList] = useState<InfoProps>({ amount: "", address: "" });
+    let [inputList, setInputList] = useState<Array<UtxoProps>>([{ txid: "", vout: "" }]);
+    let [amountList, setAmountList] = useState<InfoProps>({ amount: "", address: "" });
+
 
 
     const onChangeTxidHandler = (e: ChangeEvent<HTMLInputElement>, i: number, param: string) => {
@@ -76,7 +77,7 @@ function Form() {
         });
     }
 
-    const handleSubmitClick = () => {
+    const handleSubmitClick = async () => {
         const filtered = inputList.filter((item)=> item.txid !== "" && item.vout !== "")
         if(!filtered.length){
             window.alert("You need to input utxo details before submit")
@@ -88,6 +89,8 @@ function Form() {
         // const data = [filtered, amountList]
         const result = callAnalyzeAPI(amountList.address, amountList.amount, filtered);
         console.log(">>>>> ", result)
+        setInputList([{ txid: "", vout: "" }])
+        setAmountList({ amount: "", address: "" })
         return result;
     }
 
@@ -100,11 +103,13 @@ function Form() {
                     <input
                         name="amount"
                         placeholder="Amount"
+                        value={amountList.amount}
                         onChange={(e) => onChangeAmountHandler(e, "amount")}
                     />
                     <input
                         name="address"
                         placeholder="Destination address"
+                        value={amountList.address}
                         onChange={(e) => onChangeAmountHandler(e, "address")}
                     />
                 </div> 
@@ -139,7 +144,6 @@ function Form() {
                 <button onClick={handleAddClick}>Add</button>
                 <button onClick={handleSubmitClick}>Submit</button>
             </div>
-
             {/* <div style={{ marginTop: 20 }}>{JSON.stringify(inputList)}</div> */}
         </div>
     );
