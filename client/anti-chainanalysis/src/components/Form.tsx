@@ -79,6 +79,9 @@ function Form() {
             utxos: outputs
         }).then(response => {
             console.log("[+]", response.data);
+            if(response.data){
+                //do your thing here
+            }
         }).catch((err) => {
             console.log(err)
         });
