@@ -12,10 +12,14 @@ interface InfoProps {
     address: string;
     amount: string;
 }
+
+
 function Form() {
  
     let [inputList, setInputList] = useState<Array<UtxoProps>>([{ txid: "", vout: "" }]);
     let [amountList, setAmountList] = useState<InfoProps>({ amount: "", address: "" });
+    let seperator = ":"
+    let [result, setResult] = useState<any[]>([])
 
 
 
@@ -66,15 +70,19 @@ function Form() {
 
     const callAnalyzeAPI = (destinationAddress: string, amountInSats: string, outputs: { txid: string; vout: string; }[]) => {
         console.log("=====got here =======")
+        let apiData: any[] = []
         axios.post('http://localhost:4000/api/utxo/analyze', {
             destinationAddress: destinationAddress,
             amountInSats: amountInSats,
             utxos: outputs
         }).then(response => {
             console.log("[+]", response.data);
+            apiData = response.data
         }).catch((err) => {
             console.log(err)
+            throw err;
         });
+        return apiData;
     }
 
     const handleSubmitClick = async () => {
@@ -87,11 +95,47 @@ function Form() {
             return
         }
         // const data = [filtered, amountList]
-        const result = callAnalyzeAPI(amountList.address, amountList.amount, filtered);
+        const result = await callAnalyzeAPI(amountList.address, amountList.amount, filtered);
+        setResult(result)
         console.log(">>>>> ", result)
         setInputList([{ txid: "", vout: "" }])
         setAmountList({ amount: "", address: "" })
         return result;
+    }
+
+    const render = (result: any[]) => {
+        if (result) {
+            return (
+                <div className="container">
+                    <div className="text">
+                        <p className="message">
+                            Message: {result}
+                        </p>
+                    </div>
+                    {result.length > 0 && <table className="table">
+                        <thead>
+                            <tr>
+                                <th>S/N</th>
+                                <th>TxId:vout</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {
+                            result.map((item: any, index: number)=>{
+                                return(
+                                    <tr key={index}>
+                                        <td>{index+1}</td>
+                                        <td>{item.txid}{seperator}{item.vout}</td>
+                                    </tr>
+                                )
+                            })
+                        }
+                        </tbody>
+                    </table>}
+                </div>
+                    
+            );
+        }
     }
 
 
@@ -144,6 +188,7 @@ function Form() {
                 <button onClick={handleAddClick}>Add</button>
                 <button onClick={handleSubmitClick}>Submit</button>
             </div>
+            {render(result)}
             {/* <div style={{ marginTop: 20 }}>{JSON.stringify(inputList)}</div> */}
         </div>
     );
