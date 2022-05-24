@@ -30,7 +30,7 @@ app.post('/api/utxo/analyze', (req, res, next) => {
         responseMessage = "Successful"
       }else {
         responseStatus = "03";
-        responseMessage = "Destination Address [ "+destinationAddress+" ] may have been used in previous trnasaction"
+        responseMessage = "Destination Address [ "+destinationAddress+" ] may have been used in a previous transaction"
       }
       let utxoDetails = chainAnalysisUtil.getUtxoDetails(utxos);
       utxoDetails.then((utxoDetailsResponse) => {
