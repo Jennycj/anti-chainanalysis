@@ -1,11 +1,8 @@
 import React, {ChangeEvent, useState} from "react";
 import './Form.css'
 import axios from "axios";
-import {v4 as uuidv4} from 'uuid'
-
 
 interface UtxoProps {
-    id: string;
     txid: string;
     vout: string;
     index?: number;
@@ -16,13 +13,11 @@ interface InfoProps {
     amount: string;
 }
 function Form() {
+ 
+    let [inputList, setInputList] = useState<Array<UtxoProps>>([{ txid: "", vout: "" }]);
+    let [amountList, setAmountList] = useState<InfoProps>({ amount: "", address: "" });
 
-    const [inputList, setInputList] = useState<Array<UtxoProps>>([]);
-    const [amountList, setAmountList] = useState<InfoProps>({ amount: "", address: "" });
-    const [utxoDetails, setUtxoDetails] = useState('');
-    const [showRemove, setShowRemove] = useState(false);
-    const [removeMessage, setRemoveMessage] = useState('');
-    const [seperator, setSeperator] = useState('');
+
 
     const onChangeTxidHandler = (e: ChangeEvent<HTMLInputElement>, i: number, param: string) => {
         setInputList((prev) => {
@@ -58,16 +53,14 @@ function Form() {
     }
 
     // handle click event of the Remove button
-    const handleRemoveClick = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => {
-        // if(window.confirm('Are you sure you want to delete?')){
-            setInputList(inputList.filter((item) => item.id !== id))
-        // }
+    const handleRemoveClick = (e:React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
+        const filtered = inputList.filter((item, i)=> i !== index )
+        setInputList(filtered);
     };
 
     // handle click event of the Add button
     const handleAddClick = () => {
-        // setInputList( [...inputList, { txid: "", vout: "" }]);
-        setUtxoDetails("HEy")
+        setInputList( [...inputList, { txid: "", vout: "" }]);
         
     };
 
@@ -79,15 +72,12 @@ function Form() {
             utxos: outputs
         }).then(response => {
             console.log("[+]", response.data);
-            if(response.data){
-                //do your thing here
-            }
         }).catch((err) => {
             console.log(err)
         });
     }
 
-    const handleSubmitClick = () => {
+    const handleSubmitClick = async () => {
         const filtered = inputList.filter((item)=> item.txid !== "" && item.vout !== "")
         if(!filtered.length){
             window.alert("You need to input utxo details before submit")
@@ -99,53 +89,10 @@ function Form() {
         // const data = [filtered, amountList]
         const result = callAnalyzeAPI(amountList.address, amountList.amount, filtered);
         console.log(">>>>> ", result)
+        setInputList([{ txid: "", vout: "" }])
+        setAmountList({ amount: "", address: "" })
         return result;
     }
-
-    const handleUtxoDetailChange = (e: { target: { value: any; }; }) => {
-        // if(text === ''){
-        //     setBtnDisabled(true)
-        //     setMessage(null)
-        // } else if(text !== '' && text.trim().length <= 10) {
-        //     setMessage('Text must be at least 10 characters')
-        //     setBtnDisabled(true)
-        // } else{
-        //     setMessage(null)
-        //     setBtnDisabled(false)
-        // }
-        setUtxoDetails(e.target.value)
-    }
-
-    const handleAdd = (e: any) => {
-        e.preventDefault()
-        if(utxoDetails.trim().length > 5 && utxoDetails.trim().includes(":")){
-            let newUtxoDetails = utxoDetails.split(":");
-            const newUtxoData = {id: uuidv4(), txid: newUtxoDetails[0], vout: newUtxoDetails[1]}
-            setInputList([newUtxoData, ...inputList])
-            setUtxoDetails('')
-            setShowRemove(true)
-            setRemoveMessage("Remove");
-            setSeperator(":");
-        }
-    }
-
-    const render = () => {
-        if (showRemove) {
-            return (
-                <div>
-                    {inputList.map(detail => <><p key={detail.id}> {detail.txid}{seperator}{detail.vout}</p>  <button onClick={(e) => handleRemoveClick(e,detail.id)}>{removeMessage}</button></>)}
-                </div>
-            );
-        }else {
-            return (
-                <div>
-                    <p>  No UTXO Added </p>
-                </div>
-            );
-
-        }
-    }
-
 
 
     return (
@@ -156,55 +103,47 @@ function Form() {
                     <input
                         name="amount"
                         placeholder="Amount"
+                        value={amountList.amount}
                         onChange={(e) => onChangeAmountHandler(e, "amount")}
                     />
                     <input
                         name="address"
                         placeholder="Destination address"
+                        value={amountList.address}
                         onChange={(e) => onChangeAmountHandler(e, "address")}
                     />
-                </div>
-                {/*{inputList.map((x:UtxoProps , i:number) => {*/}
-                {/*    return (  */}
-                {/*                <div className="box" key={i}>*/}
-                {/*                    <input*/}
-                {/*                        name="transactionID"*/}
-                {/*                        placeholder="Transaction ID"*/}
-                {/*                        value={x.txid}*/}
-                {/*                        onChange={(e) => onChangeTxidHandler(e, i, "txid")}*/}
-                {/*                    />*/}
-                {/*                    <input*/}
-                {/*                        className="ml10"*/}
-                {/*                        name="Index"*/}
-                {/*                        placeholder="Vout"*/}
-                {/*                        value={x.vout}*/}
-                {/*                        onChange={(e) => onChangeTxidHandler(e, i, "vout")}*/}
-                {/*                    />*/}
-                {/*                    <div className="btn-box">*/}
-                {/*                        {inputList.length !== 1 && <button*/}
-                {/*                            className="mr10"*/}
-                {/*                            onClick={(e) => handleRemoveClick(e,i)}>Remove</button>}*/}
-                {/*                        /!* {inputList.length - 1 === i && <button onClick={handleAddClick}>Add</button>} *!/*/}
-                {/*                    </div>*/}
-                {/*                </div>*/}
-                {/*            );*/}
-                {/*})}*/}
+                </div> 
+                {inputList.map((x:UtxoProps , i:number) => {
+                    return (  
+                                <div className="box" key={i}>
+                                    <input
+                                        name="transactionID"
+                                        placeholder="Transaction ID"
+                                        value={x.txid}
+                                        onChange={(e) => onChangeTxidHandler(e, i, "txid")}
+                                    />
+                                    <input
+                                        className="ml10"
+                                        name="Index"
+                                        placeholder="Vout"
+                                        value={x.vout}
+                                        onChange={(e) => onChangeTxidHandler(e, i, "vout")}
+                                    />
+                                    <div className="btn-box">
+                                        {inputList.length !== 1 && <button
+                                            className="mr10"
+                                            onClick={(e) => handleRemoveClick(e,i)}>Remove</button>}
+                                        {/* {inputList.length - 1 === i && <button onClick={handleAddClick}>Add</button>} */}
+                                    </div>
+                                </div>
+                            );
+                })}
 
             </div>
-            <form onSubmit={handleAdd}>
-                <div className='input-group'>
-                    <input onChange={handleUtxoDetailChange} type='text' placeholder='input outpoint in form (txid:vout)' value={utxoDetails} />
-                    <button type='submit' >Add Outpoint</button>
-                </div>
-            </form>
-
-            {render()}
-
             <div className='btn-wrapper'>
-                {/*<button onClick={handleAddClick}>Add</button>*/}
+                <button onClick={handleAddClick}>Add</button>
                 <button onClick={handleSubmitClick}>Submit</button>
             </div>
-
             {/* <div style={{ marginTop: 20 }}>{JSON.stringify(inputList)}</div> */}
         </div>
     );
