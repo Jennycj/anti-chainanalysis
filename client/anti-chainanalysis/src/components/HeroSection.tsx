@@ -1,6 +1,6 @@
 import React from 'react'
 import './HeroSection.css'
-import Form from '../../../../Form';
+import Form from './Form';
 
 function HeroSection() {
   return (

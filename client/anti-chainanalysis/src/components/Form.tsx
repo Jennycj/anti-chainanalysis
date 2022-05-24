@@ -1,7 +1,6 @@
 import React, {ChangeEvent, useState} from "react";
 import './Form.css'
 import axios from "axios";
-import Table from "./client/anti-chainanalysis/src/components/Table";
 
 interface UtxoProps {
     txid: string;
@@ -17,38 +16,8 @@ function Form() {
  
     let [inputList, setInputList] = useState<Array<UtxoProps>>([{ txid: "", vout: "" }]);
     let [amountList, setAmountList] = useState<InfoProps>({ amount: "", address: "" });
-    const [showRemove, setShowRemove] = useState(false);
-    let filter = [
-            {
-                "txid": "4a4a48282eb6455816620298211ade45ebcc2900635dcd68c157121677994af2",
-                "vout": 0
-            },
-            {
-                "txid": "b06c5dc51b96d69d4b7ecd8cd93531c5902fb0163e66c7a4147dd83efee26fcf",
-                "vout": 1
-            },
-            {
-                "txid": "a0faf1399dba2b7c6dfd1d6c010e74e4cac094b1d41c72225db6e2a3bf519998",
-                "vout": 0
-            }
-        ]
 
-    const render = () => {
-            if (showRemove) {
-                return (
-                    <div>
-                        {result.map(detail => <><p key={detail.id}> {detail.txid}{seperator}{detail.vout}</p>  <button onClick={(e) => handleRemoveClick(e,detail.id)}>{removeMessage}</button></>)}
-                    </div>
-                );
-            }else {
-                return (
-                    <div>
-                        <p>  No UTXO Added </p>
-                    </div>
-                );
-    
-            }
-    }
+
 
     const onChangeTxidHandler = (e: ChangeEvent<HTMLInputElement>, i: number, param: string) => {
         setInputList((prev) => {
@@ -175,7 +144,6 @@ function Form() {
                 <button onClick={handleAddClick}>Add</button>
                 <button onClick={handleSubmitClick}>Submit</button>
             </div>
-            {render()}
             {/* <div style={{ marginTop: 20 }}>{JSON.stringify(inputList)}</div> */}
         </div>
     );
