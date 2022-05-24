@@ -68,12 +68,12 @@ function Form() {
         
     };
 
-    const callAnalyzeAPI = (destinationAddress: string, amountInSats: string, outputs: { txid: string; vout: string; }[]) => {
+    const callAnalyzeAPI = (destinationAddress: string, amount: string, outputs: { txid: string; vout: string; }[]) => {
         console.log("=====got here =======")
         let apiData: any[] = []
         axios.post('http://localhost:4000/api/utxo/analyze', {
             destinationAddress: destinationAddress,
-            amountInSats: amountInSats,
+            amount: amount,
             utxos: outputs
         }).then(response => {
             console.log("[+]", response.data);
