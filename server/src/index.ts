@@ -5,7 +5,6 @@ import cors from "cors";
 
 
 
-// Configure server
 const app = express();
 const port = '4000'
 
@@ -42,6 +41,8 @@ app.post('/api/utxo/analyze', (req, res, next) => {
           res.json({status: "01", message: "Amount cannot be greater than or equals sum of UTXOs value", data: null});
         }
       }).catch((err) => {
+        responseStatus = "01";
+        responseMessage = "An error occurred"
         res.json({status: responseStatus, message: responseMessage, data: err});
       })
   }).catch((err) => {

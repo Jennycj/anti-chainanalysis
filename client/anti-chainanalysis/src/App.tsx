@@ -1,8 +1,8 @@
-import React from 'react';
 import './App.css';
 import Navbar from './components/Navbar';
 import { BrowserRouter as Router} from 'react-router-dom';
 import HeroSection from './components/HeroSection';
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -10,8 +10,8 @@ function App() {
     <Router>
       <Navbar />
       <HeroSection />
+      <Footer />
     </Router>
-    
     </>
   );
 }

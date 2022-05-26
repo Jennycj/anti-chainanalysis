@@ -21,7 +21,7 @@ The aim of this document is to describe an anti-chain analysis service (API) tha
 ## Goal
 Use the different heuristics approach to evaluate sets of UTXO with respect to the provided amount. Some of the heuristics that will be explored include:
 
-**The unnecessary Input Heuristic:** is used to counter change detection Although this will require the user to pass more UTXO that sums to an amount greater than the intended amount.
+**The unnecessary Input Heuristic:** is used to counter change detection Although this will require the user to pass more UTXO that sums to an amount greater than the intended amount they want to send.
 
 **Shadow heuristic:** when an address is reused, it’s easy to tell which address is the change address. This service will use this heuristic to prevent sending transaction funds back to any of the previous output script
 
