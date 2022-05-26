@@ -18,7 +18,7 @@ app.post('/api/utxo/analyze', (req, res, next) => {
 
   let responseStatus = "01";
   let responseMessage = "Failed"
-  let amountInSats = parseFloat(amount) //+ parseFloat(chainAnalysisService.getFeeRateInSataPerByte());
+  let amountInSats = parseFloat(amount)
 
   try{
 
