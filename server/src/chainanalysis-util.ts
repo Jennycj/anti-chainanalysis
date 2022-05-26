@@ -78,12 +78,15 @@ export class ChainAnalysisUtil {
                 },
                 data: data
             };
-
-            result = await axios(config)
-            // response.push(result.data.result)
-            // console.log("#===========# ", result.data.result.scriptPubKey.addresses)
-            console.log("#===========# ", result.data.result)
-            response.push({txid: txidd, vout: voutt, amountInSats: result.data.result.value})
+            try {
+                result = await axios(config)
+                console.log("#===========# ", result.data.result)
+                response.push({txid: txidd, vout: voutt, amountInSats: result.data.result.value})
+            } catch (error) {
+                console.log(`error getting utxo details for outpoint ${{txidd:voutt}}`);
+                
+            }
+           
         }
 
         console.log(response)
